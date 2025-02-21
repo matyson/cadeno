@@ -102,7 +102,7 @@ async function registerRepeater() {
 async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION
+  version: number = DEFAULT_VERSION,
 ) {
   const req = requestVersion(priority, version);
   await conn.write(req);
@@ -141,7 +141,7 @@ async function main() {
   await registerRepeater();
   const { conn: _conn } = await createVirtualCircuit(
     ADDR_LIST[0],
-    DEFAULT_PORT
+    DEFAULT_PORT,
   );
 
   console.log("Connected to server");
