@@ -1,6 +1,7 @@
 # cadeno
 
-**Experimental** EPICS Channel Access Protocol (CA) pure TypeScript implementation for Deno/Node.js runtime.
+**Experimental** EPICS Channel Access Protocol (CA) pure TypeScript
+implementation for Deno/Node.js runtime.
 
 ## Motivations
 

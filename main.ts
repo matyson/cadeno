@@ -60,7 +60,7 @@ function requestVersion(priority: number, version: number): Uint8Array {
 async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION
+  version: number = DEFAULT_VERSION,
 ) {
   const req = requestVersion(priority, version);
   await conn.write(req);
