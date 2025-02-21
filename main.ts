@@ -1,9 +1,12 @@
 import {
+  ADDR_LIST,
   commands,
   DEFAULT_PRIORITY,
   DEFAULT_VERSION,
+  REPEATER_PORT,
   RESPONSE_SIZE,
 } from "./constants.ts";
+import { DEFAULT_PORT } from "./constants.ts";
 
 type Header = {
   command: number; // UINT16 - 2 bytes
@@ -29,12 +32,12 @@ function headerToBuffer(header: Header): Uint8Array {
   const buf = new Uint8Array(16);
   const view = new DataView(buf.buffer);
 
-  view.setUint16(0, header.command, true);
-  view.setUint16(2, header.payloadSize, true);
-  view.setUint16(4, header.dataType, true);
-  view.setUint16(6, header.dataCount, true);
-  view.setUint32(8, header.param1, true);
-  view.setUint32(12, header.param2, true);
+  view.setUint16(0, header.command);
+  view.setUint16(2, header.payloadSize);
+  view.setUint16(4, header.dataType);
+  view.setUint16(6, header.dataCount);
+  view.setUint32(8, header.param1);
+  view.setUint32(12, header.param2);
 
   return buf;
 }
@@ -43,12 +46,12 @@ function headerFromBuffer(buf: Uint8Array): Header {
   const view = new DataView(buf.buffer);
 
   return {
-    command: view.getUint16(0, true),
-    payloadSize: view.getUint16(2, true),
-    dataType: view.getUint16(4, true),
-    dataCount: view.getUint16(6, true),
-    param1: view.getUint32(8, true),
-    param2: view.getUint32(12, true),
+    command: view.getUint16(0),
+    payloadSize: view.getUint16(2),
+    dataType: view.getUint16(4),
+    dataCount: view.getUint16(6),
+    param1: view.getUint32(8),
+    param2: view.getUint32(12),
   };
 }
 
@@ -57,10 +60,49 @@ function requestVersion(priority: number, version: number): Uint8Array {
   return headerToBuffer(header);
 }
 
+async function registerRepeater() {
+  const clientHost = "127.0.0.1";
+  const clientPort = 8080;
+  const udpSocket = Deno.listenDatagram({
+    transport: "udp",
+    hostname: clientHost,
+    port: clientPort,
+  });
+
+  const ipToNumber = (ip: string) =>
+    ip
+      .split(".")
+      .reduce((acc, octet, i) => acc + parseInt(octet) * 256 ** i, 0);
+
+  const registerCommand = headerToBuffer({
+    command: commands.REPEATER_REGISTER,
+    payloadSize: 0,
+    dataType: 0,
+    dataCount: 0,
+    param1: 0,
+    param2: ipToNumber(clientHost),
+  });
+
+  const repeaterAddr: Deno.Addr = {
+    transport: "udp",
+    hostname: ADDR_LIST[0],
+    port: REPEATER_PORT,
+  };
+
+  await udpSocket.send(registerCommand, repeaterAddr);
+
+  const response = new Uint8Array(RESPONSE_SIZE);
+  const [data, _addr] = await udpSocket.receive(response);
+
+  const header = headerFromBuffer(data);
+  console.log(header);
+  udpSocket.close();
+}
+
 async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION,
+  version: number = DEFAULT_VERSION
 ) {
   const req = requestVersion(priority, version);
   await conn.write(req);
@@ -85,6 +127,7 @@ async function createVirtualCircuit(hostname: string, port: number) {
   }
 
   const res = await handshake(conn);
+  console.log(res);
 
   if (res.command !== commands.VERSION) {
     console.log("Invalid response");
@@ -95,7 +138,11 @@ async function createVirtualCircuit(hostname: string, port: number) {
 }
 
 async function main() {
-  const { conn: _conn } = await createVirtualCircuit("localhost", 5064);
+  await registerRepeater();
+  const { conn: _conn } = await createVirtualCircuit(
+    ADDR_LIST[0],
+    DEFAULT_PORT
+  );
 
   console.log("Connected to server");
 }
