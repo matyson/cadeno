@@ -95,7 +95,7 @@ async function createVirtualCircuit(hostname: string, port: number) {
 }
 
 async function main() {
-  const { conn } = await createVirtualCircuit("localhost", 5064);
+  const { conn: _conn } = await createVirtualCircuit("localhost", 5064);
 
   console.log("Connected to server");
 }
