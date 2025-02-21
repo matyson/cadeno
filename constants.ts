@@ -5,6 +5,9 @@ export const RESPONSE_SIZE = 1024;
 export const MAX_PRIORITY = 99;
 export const DEFAULT_PRIORITY = 0;
 export const DEFAULT_VERSION = 15;
+export const REPEATER_PORT = 5065;
+export const DEFAULT_PORT = 5064;
+export const ADDR_LIST = ["127.0.0.1"];
 
 export const commands = {
   VERSION: 0,
@@ -12,6 +15,7 @@ export const commands = {
   CLIENT_NAME: 20,
   HOST_NAME: 21,
   ECHO: 23,
+  REPEATER_REGISTER: 24,
 };
 
 export const DBR_TYPES = {
