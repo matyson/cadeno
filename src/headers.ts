@@ -72,7 +72,7 @@ function getHostNameHeader(hostname: string): Header {
 function getCreateChanHeader(
   channelName: string,
   cid: number,
-  version: number
+  version: number,
 ) {
   return {
     command: commands.CREATE_CHAN,
@@ -85,11 +85,11 @@ function getCreateChanHeader(
 }
 
 export {
-  type Header,
-  headerToBuffer,
-  headerFromBuffer,
-  getVersionHeader,
   getClientNameHeader,
-  getHostNameHeader,
   getCreateChanHeader,
+  getHostNameHeader,
+  getVersionHeader,
+  type Header,
+  headerFromBuffer,
+  headerToBuffer,
 };

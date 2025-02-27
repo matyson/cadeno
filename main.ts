@@ -7,12 +7,12 @@ import {
 } from "./src/constants.ts";
 import { DEFAULT_PORT } from "./src/constants.ts";
 import {
-  headerFromBuffer,
-  headerToBuffer,
   getClientNameHeader,
   getCreateChanHeader,
   getHostNameHeader,
   getVersionHeader,
+  headerFromBuffer,
+  headerToBuffer,
 } from "./src/headers.ts";
 
 function requestVersion(priority: number, version: number): Uint8Array {
@@ -41,7 +41,7 @@ function requestCreateChan(channelName: string, cid: number, version: number) {
 async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION
+  version: number = DEFAULT_VERSION,
 ) {
   const result = await Promise.allSettled([
     conn.write(requestVersion(priority, version)),
