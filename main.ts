@@ -6,39 +6,15 @@ import {
   RESPONSE_SIZE,
 } from "./src/constants.ts";
 import { DEFAULT_PORT } from "./src/constants.ts";
+import { headerFromBuffer } from "./src/headers.ts";
 import {
-  getClientNameHeader,
-  getCreateChanHeader,
-  getHostNameHeader,
-  getVersionHeader,
-  headerFromBuffer,
-  headerToBuffer,
-} from "./src/headers.ts";
+  requestClientName,
+  requestCreateChan,
+  requestHostName,
+  requestVersion,
+} from "./src/requests.ts";
 
-function requestVersion(priority: number, version: number): Uint8Array {
-  const header = getVersionHeader(priority, version);
-  return headerToBuffer(header);
-}
-
-function requestClientName(username: string): Uint8Array {
-  const header = getClientNameHeader(username);
-  const payload = new TextEncoder().encode(username);
-  return new Uint8Array([...headerToBuffer(header), ...payload]);
-}
-
-function requestHostName(hostname: string): Uint8Array {
-  const header = getHostNameHeader(hostname);
-  const payload = new TextEncoder().encode(hostname);
-  return new Uint8Array([...headerToBuffer(header), ...payload]);
-}
-
-function requestCreateChan(channelName: string, cid: number, version: number) {
-  const header = getCreateChanHeader(channelName, cid, version);
-  const payload = new TextEncoder().encode(channelName);
-  return new Uint8Array([...headerToBuffer(header), ...payload]);
-}
-
-async function handshake(
+export async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
   version: number = DEFAULT_VERSION,
@@ -61,7 +37,7 @@ async function handshake(
   return headerFromBuffer(response);
 }
 
-async function createVirtualCircuit(hostname: string, port: number) {
+export async function createVirtualCircuit(hostname: string, port: number) {
   let conn;
   try {
     conn = await Deno.connect({

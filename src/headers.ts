@@ -47,10 +47,10 @@ function getVersionHeader(priority: number, version: number): Header {
   };
 }
 
-function getClientNameHeader(username: string): Header {
+function getClientNameHeader(payloadSize: number): Header {
   return {
     command: commands.CLIENT_NAME,
-    payloadSize: username.length,
+    payloadSize,
     dataType: 0,
     dataCount: 0,
     param1: 0,
@@ -58,10 +58,10 @@ function getClientNameHeader(username: string): Header {
   };
 }
 
-function getHostNameHeader(hostname: string): Header {
+function getHostNameHeader(payloadSize: number): Header {
   return {
     command: commands.HOST_NAME,
-    payloadSize: hostname.length,
+    payloadSize,
     dataType: 0,
     dataCount: 0,
     param1: 0,
@@ -70,13 +70,13 @@ function getHostNameHeader(hostname: string): Header {
 }
 
 function getCreateChanHeader(
-  channelName: string,
+  payloadSize: number,
   cid: number,
   version: number,
 ) {
   return {
     command: commands.CREATE_CHAN,
-    payloadSize: channelName.length,
+    payloadSize,
     dataType: 0,
     dataCount: 0,
     param1: cid,
