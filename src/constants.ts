@@ -9,6 +9,13 @@ export const REPEATER_PORT = 5065;
 export const DEFAULT_PORT = 5064;
 export const ADDR_LIST = ["127.0.0.1"];
 
+export const ACCESS_RIGHTS = {
+  READ: 1,
+  WRITE: 2,
+  READ_WRITE: 3,
+  NO_ACCESS: 0,
+} as const;
+
 export const commands = {
   VERSION: 0,
   READ: 3,
