@@ -1,0 +1,7 @@
+dist
+build
+*.ipynb
+.env
+*.log
+*.out
+*.bin
