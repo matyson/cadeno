@@ -26,6 +26,10 @@ export const commands = {
   REPEATER_REGISTER: 24,
 } as const;
 
+export const errors = {
+  CREATE_CHAN: 26,
+} as const;
+
 export const DBR_TYPES = {
   STRING: 0,
   INT: 1,
