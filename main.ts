@@ -13,11 +13,12 @@ import {
   requestHostName,
   requestVersion,
 } from "./src/requests.ts";
+import { createChanResponse } from "./src/responses.ts";
 
 export async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION,
+  version: number = DEFAULT_VERSION
 ) {
   const result = await Promise.allSettled([
     conn.write(requestVersion(priority, version)),
@@ -57,6 +58,7 @@ export async function createVirtualCircuit(hostname: string, port: number) {
     console.log("Invalid response");
     Deno.exit(1);
   }
+  console.log("Connected to server");
 
   return { conn };
 }
@@ -64,13 +66,17 @@ export async function createVirtualCircuit(hostname: string, port: number) {
 async function main() {
   const { conn } = await createVirtualCircuit(ADDR_LIST[0], DEFAULT_PORT);
 
-  console.log("Connected to server");
-
-  await conn.write(requestCreateChan("test", 1, DEFAULT_VERSION));
+  await conn.write(requestCreateChan("random_walk:x", 1, DEFAULT_VERSION));
   const response = new Uint8Array(RESPONSE_SIZE);
   await conn.read(response);
 
-  console.log(headerFromBuffer(response));
+  try {
+    const res = createChanResponse(response);
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+  conn.close();
 }
 
 // Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
