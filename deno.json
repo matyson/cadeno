@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A  main.ts",
+    "dev": "deno run --allow-net --allow-sys main.ts",
     "ci": "deno lint && deno fmt --check"
   },
   "imports": {
