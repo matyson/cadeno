@@ -11,12 +11,15 @@ import { MAX_MESSAGE_SIZE } from "./constants.ts";
 import { concat, copy } from "@std/bytes";
 
 function genPayload(payload: string): Uint8Array {
-  const nextMultipleOfEight = Math.ceil(payload.length / 8) * 8;
+  const encoded = new TextEncoder().encode(payload);
+  const nextMultipleOfEight = Math.ceil(encoded.length / 8) * 8;
   if (nextMultipleOfEight > MAX_MESSAGE_SIZE) {
     throw new Error("Payload too large");
   }
+  // pad the payload to the next multiple of 8
   const buffer = new Uint8Array(nextMultipleOfEight);
-  copy(new TextEncoder().encode(payload), buffer);
+  copy(encoded, buffer);
+
   return buffer;
 }
 
