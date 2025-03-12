@@ -1,4 +1,5 @@
 import { commands } from "./constants.ts";
+import { HEADER_SIZE } from "./constants.ts";
 
 type Header = {
   command: number; // UINT16 - 2 bytes
@@ -10,7 +11,7 @@ type Header = {
 };
 
 function headerToBuffer(header: Header): Uint8Array {
-  const buf = new Uint8Array(16);
+  const buf = new Uint8Array(HEADER_SIZE);
   const view = new DataView(buf.buffer);
 
   view.setUint16(0, header.command);
@@ -84,10 +85,27 @@ function getCreateChanHeader(
   };
 }
 
+function getSearchHeader(
+  payloadSize: number,
+  reply: number,
+  version: number,
+  searchID: number,
+) {
+  return {
+    command: commands.SEARCH,
+    payloadSize,
+    dataType: reply,
+    dataCount: version,
+    param1: searchID,
+    param2: searchID,
+  };
+}
+
 export {
   getClientNameHeader,
   getCreateChanHeader,
   getHostNameHeader,
+  getSearchHeader,
   getVersionHeader,
   type Header,
   headerFromBuffer,

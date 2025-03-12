@@ -2,6 +2,7 @@ import {
   getClientNameHeader,
   getCreateChanHeader,
   getHostNameHeader,
+  getSearchHeader,
   getVersionHeader,
   headerFromBuffer,
   headerToBuffer,
@@ -45,10 +46,23 @@ function requestCreateChan(channelName: string, cid: number, version: number) {
   return concat([headerToBuffer(header), payload]);
 }
 
+function requestSearch(
+  channelName: string,
+  reply: number,
+  version: number,
+  searchID: number,
+) {
+  const payload = genPayload(channelName);
+  const header = getSearchHeader(payload.length, reply, version, searchID);
+
+  return concat([headerToBuffer(header), payload]);
+}
+
 export {
   headerFromBuffer,
   requestClientName,
   requestCreateChan,
   requestHostName,
+  requestSearch,
   requestVersion,
 };

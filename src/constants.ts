@@ -4,8 +4,8 @@ export const MAX_MESSAGE_SIZE = PAYLOAD_MAX_SIZE + HEADER_SIZE;
 export const RESPONSE_SIZE = 1024;
 export const MAX_PRIORITY = 99;
 export const DEFAULT_PRIORITY = 0;
-export const MAJOR_PROTOCOL_VERSION = 3;
-export const MINOR_PROTOCOL_VERSION = 15;
+export const MAJOR_PROTOCOL_VERSION = 4; // CA major version
+export const MINOR_PROTOCOL_VERSION = 13; // 2010 minor version
 export const BASE_PORT = 5056;
 export const REPEATER_PORT = BASE_PORT + MAJOR_PROTOCOL_VERSION * 2 + 1; // 5065
 export const SERVER_PORT = BASE_PORT + MAJOR_PROTOCOL_VERSION * 2; // 5064
@@ -18,9 +18,15 @@ export const ACCESS_RIGHTS = {
   NO_ACCESS: 0,
 } as const;
 
+export const SEARCH_REPLY_FLAGS = {
+  DO_REPLY: 10, // server should reply failed search requests
+  DONT_REPLY: 5, // server shouuld ignore failed search requests
+} as const;
+
 export const commands = {
   VERSION: 0,
   READ: 3,
+  SEARCH: 6,
   CREATE_CHAN: 18,
   CLIENT_NAME: 20,
   HOST_NAME: 21,
@@ -29,6 +35,7 @@ export const commands = {
 } as const;
 
 export const errors = {
+  NOT_FOUND: 14,
   CREATE_CHAN: 26,
 } as const;
 
