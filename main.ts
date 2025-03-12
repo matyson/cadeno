@@ -2,10 +2,10 @@ import {
   ADDR_LIST,
   commands,
   DEFAULT_PRIORITY,
-  DEFAULT_VERSION,
+  MINOR_PROTOCOL_VERSION,
   RESPONSE_SIZE,
+  SERVER_PORT,
 } from "./src/constants.ts";
-import { DEFAULT_PORT } from "./src/constants.ts";
 import { headerFromBuffer } from "./src/headers.ts";
 import {
   requestClientName,
@@ -18,7 +18,7 @@ import { createChanResponse } from "./src/responses.ts";
 export async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
-  version: number = DEFAULT_VERSION
+  version: number = MINOR_PROTOCOL_VERSION,
 ) {
   const result = await Promise.allSettled([
     conn.write(requestVersion(priority, version)),
@@ -64,9 +64,11 @@ export async function createVirtualCircuit(hostname: string, port: number) {
 }
 
 async function main() {
-  const { conn } = await createVirtualCircuit(ADDR_LIST[0], DEFAULT_PORT);
+  const { conn } = await createVirtualCircuit(ADDR_LIST[0], SERVER_PORT);
 
-  await conn.write(requestCreateChan("random_walk:x", 1, DEFAULT_VERSION));
+  await conn.write(
+    requestCreateChan("random_walk:x", 1, MINOR_PROTOCOL_VERSION),
+  );
   const response = new Uint8Array(RESPONSE_SIZE);
   await conn.read(response);
 

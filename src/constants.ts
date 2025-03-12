@@ -4,9 +4,11 @@ export const MAX_MESSAGE_SIZE = PAYLOAD_MAX_SIZE + HEADER_SIZE;
 export const RESPONSE_SIZE = 1024;
 export const MAX_PRIORITY = 99;
 export const DEFAULT_PRIORITY = 0;
-export const DEFAULT_VERSION = 15;
-export const REPEATER_PORT = 5065;
-export const DEFAULT_PORT = 5064;
+export const MAJOR_PROTOCOL_VERSION = 3;
+export const MINOR_PROTOCOL_VERSION = 15;
+export const BASE_PORT = 5056;
+export const REPEATER_PORT = BASE_PORT + MAJOR_PROTOCOL_VERSION * 2 + 1; // 5065
+export const SERVER_PORT = BASE_PORT + MAJOR_PROTOCOL_VERSION * 2; // 5064
 export const ADDR_LIST = ["127.0.0.1"];
 
 export const ACCESS_RIGHTS = {
