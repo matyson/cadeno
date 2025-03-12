@@ -4,6 +4,7 @@ import {
   DEFAULT_PRIORITY,
   MINOR_PROTOCOL_VERSION,
   RESPONSE_SIZE,
+  SEARCH_REPLY_FLAGS,
   SERVER_PORT,
 } from "./src/constants.ts";
 import { headerFromBuffer } from "./src/headers.ts";
@@ -11,9 +12,10 @@ import {
   requestClientName,
   requestCreateChan,
   requestHostName,
+  requestSearch,
   requestVersion,
 } from "./src/requests.ts";
-import { createChanResponse } from "./src/responses.ts";
+import { createChanResponse, searchResponse } from "./src/responses.ts";
 
 export async function handshake(
   conn: Deno.Conn,
@@ -64,16 +66,36 @@ export async function createVirtualCircuit(hostname: string, port: number) {
 }
 
 async function main() {
+  const channelName = "random_walk:x";
   const { conn } = await createVirtualCircuit(ADDR_LIST[0], SERVER_PORT);
 
   await conn.write(
-    requestCreateChan("random_walk:x", 1, MINOR_PROTOCOL_VERSION),
+    requestSearch(
+      channelName,
+      SEARCH_REPLY_FLAGS.DO_REPLY,
+      MINOR_PROTOCOL_VERSION,
+      1,
+    ),
   );
-  const response = new Uint8Array(RESPONSE_SIZE);
-  await conn.read(response);
+  const buf = new Uint8Array(RESPONSE_SIZE);
+  await conn.read(buf);
 
   try {
-    const res = createChanResponse(response);
+    const res = searchResponse(buf);
+    console.log("Channel found");
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+
+  await conn.write(
+    requestCreateChan(channelName, 1, MINOR_PROTOCOL_VERSION),
+  );
+  await conn.read(buf);
+
+  try {
+    const res = createChanResponse(buf);
+    console.log("Channel created");
     console.log(res);
   } catch (err) {
     console.log(err);
