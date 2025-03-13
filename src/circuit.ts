@@ -1,3 +1,4 @@
+import type { AccessRights, Channel } from "./types.ts";
 import {
   commands,
   DEFAULT_PRIORITY,
@@ -10,7 +11,6 @@ import {
   requestHostName,
   requestVersion,
 } from "./requests.ts";
-import { Channel } from "./types.ts";
 
 export async function handshake(
   conn: Deno.Conn,
@@ -41,15 +41,17 @@ export async function createVirtualCircuit(hostname: string, port: number) {
 
   const addChannel = (
     name: string,
+    dataType: number,
     cid: number,
     sid: number,
-    dataType: number,
+    accessRights: AccessRights,
   ) => {
-    channels.push({ name, cid, sid, dataType });
+    channels.push({ name, cid, sid, dataType, accessRights });
   };
   const getChannel = (name: string) => {
     return channels.find((channel) => channel.name === name);
   };
+  const getChannels = () => channels;
   const removeChannel = (name: string) => {
     channels = channels.filter((channel) => channel.name !== name);
   };
@@ -74,5 +76,5 @@ export async function createVirtualCircuit(hostname: string, port: number) {
   }
   console.log("Connected to server");
 
-  return { conn, addChannel, getChannel, removeChannel };
+  return { conn, addChannel, getChannel, getChannels, removeChannel };
 }

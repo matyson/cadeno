@@ -1,3 +1,7 @@
+import { ACCESS_RIGHTS } from "./constants.ts";
+
+export type AccessRights = typeof ACCESS_RIGHTS[keyof typeof ACCESS_RIGHTS];
+
 export type Header = { // 16 bytes
   command: number; // UINT16 - 2 bytes
   payloadSize: number; // UINT16 or UINT32 - 2 or 4 bytes
@@ -23,6 +27,7 @@ export type Channel = {
   cid: number;
   sid: number;
   dataType: number;
+  accessRights: AccessRights;
 };
 
 export interface Message {
