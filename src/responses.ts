@@ -1,11 +1,6 @@
-import type { Header } from "./headers.ts";
+import type { Header, Response } from "./types.ts";
 import { errors, HEADER_SIZE } from "./constants.ts";
 import { headerFromBuffer } from "./headers.ts";
-
-type Response = {
-  header: Header;
-  payload: Uint8Array;
-};
 
 function payloadFromBuffer(buf: Uint8Array, payloadSize: number): Uint8Array {
   return buf.slice(HEADER_SIZE, HEADER_SIZE + payloadSize);
