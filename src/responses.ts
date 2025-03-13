@@ -2,11 +2,17 @@ import type { Header, Response } from "./types.ts";
 import { errors, HEADER_SIZE } from "./constants.ts";
 import { headerFromBuffer } from "./headers.ts";
 
-function payloadFromBuffer(buf: Uint8Array, payloadSize: number): Uint8Array {
+function payloadFromBuffer(
+  buf: Uint8Array,
+  payloadSize: number,
+): Uint8Array | undefined {
+  if (payloadSize === 0) {
+    return undefined;
+  }
   return buf.slice(HEADER_SIZE, HEADER_SIZE + payloadSize);
 }
 
-function response(header: Header, payload: Uint8Array): Response {
+function response(header: Header, payload?: Uint8Array): Response {
   return { header, payload };
 }
 
