@@ -4,11 +4,12 @@ import {
   getHostNameHeader,
   getSearchHeader,
   getVersionHeader,
-  headerFromBuffer,
+  Header,
   headerToBuffer,
 } from "./headers.ts";
 import { MAX_MESSAGE_SIZE } from "./constants.ts";
 import { concat, copy } from "@std/bytes";
+import type { Request } from "./types.ts";
 
 function genPayload(payload: string): Uint8Array {
   const encoded = new TextEncoder().encode(payload);
@@ -23,30 +24,41 @@ function genPayload(payload: string): Uint8Array {
   return buffer;
 }
 
-function requestVersion(priority: number, version: number): Uint8Array {
-  const header = getVersionHeader(priority, version);
+function raw(header: Header, payload?: Uint8Array): Uint8Array {
+  if (payload) {
+    return concat([headerToBuffer(header), payload]);
+  }
   return headerToBuffer(header);
 }
 
-function requestClientName(clientName: string): Uint8Array {
+function requestVersion(priority: number, version: number): Request {
+  const header = getVersionHeader(priority, version);
+  return { header, payload: undefined, raw: raw(header) };
+}
+
+function requestClientName(clientName: string): Request {
   const payload = genPayload(clientName);
   const header = getClientNameHeader(payload.length);
 
-  return concat([headerToBuffer(header), payload]);
+  return { header, payload, raw: raw(header, payload) };
 }
 
-function requestHostName(hostname: string): Uint8Array {
+function requestHostName(hostname: string): Request {
   const payload = genPayload(hostname);
   const header = getHostNameHeader(payload.length);
 
-  return concat([headerToBuffer(header), payload]);
+  return { header, payload, raw: raw(header, payload) };
 }
 
-function requestCreateChan(channelName: string, cid: number, version: number) {
+function requestCreateChan(
+  channelName: string,
+  cid: number,
+  version: number,
+): Request {
   const payload = genPayload(channelName);
   const header = getCreateChanHeader(payload.length, cid, version);
 
-  return concat([headerToBuffer(header), payload]);
+  return { header, payload, raw: raw(header, payload) };
 }
 
 function requestSearch(
@@ -54,15 +66,14 @@ function requestSearch(
   reply: number,
   version: number,
   searchID: number,
-) {
+): Request {
   const payload = genPayload(channelName);
   const header = getSearchHeader(payload.length, reply, version, searchID);
 
-  return concat([headerToBuffer(header), payload]);
+  return { header, payload, raw: raw(header, payload) };
 }
 
 export {
-  headerFromBuffer,
   requestClientName,
   requestCreateChan,
   requestHostName,

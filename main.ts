@@ -1,69 +1,13 @@
+import { createVirtualCircuit } from "./src/circuit.ts";
 import {
   ADDR_LIST,
-  commands,
-  DEFAULT_PRIORITY,
   MINOR_PROTOCOL_VERSION,
   RESPONSE_SIZE,
   SEARCH_REPLY_FLAGS,
   SERVER_PORT,
 } from "./src/constants.ts";
-import { headerFromBuffer } from "./src/headers.ts";
-import {
-  requestClientName,
-  requestCreateChan,
-  requestHostName,
-  requestSearch,
-  requestVersion,
-} from "./src/requests.ts";
+import { requestCreateChan, requestSearch } from "./src/requests.ts";
 import { createChanResponse, searchResponse } from "./src/responses.ts";
-
-export async function handshake(
-  conn: Deno.Conn,
-  priority: number = DEFAULT_PRIORITY,
-  version: number = MINOR_PROTOCOL_VERSION,
-) {
-  const result = await Promise.allSettled([
-    conn.write(requestVersion(priority, version)),
-    conn.write(requestClientName("deno")),
-    conn.write(requestHostName(Deno.hostname())),
-  ]);
-
-  result.forEach((res) => {
-    if (res.status === "rejected") {
-      console.log(res.reason);
-    }
-  });
-
-  const response = new Uint8Array(RESPONSE_SIZE);
-  await conn.read(response);
-
-  return headerFromBuffer(response);
-}
-
-export async function createVirtualCircuit(hostname: string, port: number) {
-  let conn;
-  try {
-    conn = await Deno.connect({
-      transport: "tcp",
-      port: port,
-      hostname: hostname,
-    });
-  } catch (err) {
-    console.log(err);
-    Deno.exit(1);
-  }
-
-  const res = await handshake(conn);
-  console.log(res);
-
-  if (res.command !== commands.VERSION) {
-    console.log("Invalid response");
-    Deno.exit(1);
-  }
-  console.log("Connected to server");
-
-  return { conn };
-}
 
 async function main() {
   const channelName = "random_walk:x";
@@ -75,7 +19,7 @@ async function main() {
       SEARCH_REPLY_FLAGS.DO_REPLY,
       MINOR_PROTOCOL_VERSION,
       1,
-    ),
+    ).raw,
   );
   const buf = new Uint8Array(RESPONSE_SIZE);
   await conn.read(buf);
@@ -89,12 +33,15 @@ async function main() {
   }
 
   await conn.write(
-    requestCreateChan(channelName, 1, MINOR_PROTOCOL_VERSION),
+    requestCreateChan(channelName, 1, MINOR_PROTOCOL_VERSION).raw,
   );
-  await conn.read(buf);
+
+  const n = await conn.read(buf);
+  console.log(n);
 
   try {
     const res = createChanResponse(buf);
+    console.log(buf);
     console.log("Channel created");
     console.log(res);
   } catch (err) {

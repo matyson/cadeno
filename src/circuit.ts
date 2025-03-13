@@ -18,9 +18,9 @@ export async function handshake(
   version: number = MINOR_PROTOCOL_VERSION,
 ) {
   const result = await Promise.allSettled([
-    conn.write(requestVersion(priority, version)),
-    conn.write(requestClientName("deno")),
-    conn.write(requestHostName(Deno.hostname())),
+    conn.write(requestVersion(priority, version).raw),
+    conn.write(requestClientName("deno").raw),
+    conn.write(requestHostName(Deno.hostname()).raw),
   ]);
 
   result.forEach((res) => {

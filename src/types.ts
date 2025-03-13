@@ -30,6 +30,8 @@ export interface Message {
   payload: Uint8Array | undefined;
 }
 
-export interface Request extends Message {}
+export interface Request extends Message {
+  raw: Uint8Array;
+}
 
 export interface Response extends Message {}
