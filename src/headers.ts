@@ -1,14 +1,5 @@
-import { commands } from "./constants.ts";
-import { HEADER_SIZE } from "./constants.ts";
-
-type Header = {
-  command: number; // UINT16 - 2 bytes
-  payloadSize: number; // UINT16 or UINT32 - 2 or 4 bytes
-  dataType: number; // UINT16 - 2 bytes
-  dataCount: number; // UINT16 or UINT32 - 2 or 4 bytes
-  param1: number; // UINT32 - 4 bytes
-  param2: number; // UINT32 - 4 bytes
-};
+import type { Header } from "./types.ts";
+import { commands, HEADER_SIZE } from "./constants.ts";
 
 function headerToBuffer(header: Header): Uint8Array {
   const buf = new Uint8Array(HEADER_SIZE);
