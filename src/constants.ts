@@ -1,5 +1,6 @@
 export const PAYLOAD_MAX_SIZE = 16368; // 16KB or 16368 bytes
 export const HEADER_SIZE = 16; // 16 bytes
+export const EXTENDED_HEADER_SIZE = 24; // 24 bytes
 export const MAX_MESSAGE_SIZE = PAYLOAD_MAX_SIZE + HEADER_SIZE;
 export const RESPONSE_SIZE = 1024;
 export const MAX_PRIORITY = 99;
@@ -18,6 +19,11 @@ export const ACCESS_RIGHTS = {
   NO_ACCESS: 0,
 } as const;
 
+export const IOID = {
+  GET: 0,
+  PUT: 1,
+} as const;
+
 export const SEARCH_REPLY_FLAGS = {
   DO_REPLY: 10, // server should reply failed search requests
   DONT_REPLY: 5, // server shouuld ignore failed search requests
@@ -25,8 +31,9 @@ export const SEARCH_REPLY_FLAGS = {
 
 export const commands = {
   VERSION: 0,
-  READ: 3,
+  READ: 3, // deprecated
   SEARCH: 6,
+  READ_NOTIFY: 15,
   CREATE_CHAN: 18,
   CLIENT_NAME: 20,
   HOST_NAME: 21,
