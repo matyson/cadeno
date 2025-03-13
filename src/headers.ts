@@ -92,13 +92,29 @@ function getSearchHeader(
   };
 }
 
+function getReadNotifyHeader(
+  dataType: number,
+  dataCount: number,
+  sid: number,
+  ioid: number,
+): Header {
+  return {
+    command: commands.READ_NOTIFY,
+    payloadSize: 0,
+    dataType,
+    dataCount,
+    param1: sid,
+    param2: ioid,
+  };
+}
+
 export {
   getClientNameHeader,
   getCreateChanHeader,
   getHostNameHeader,
+  getReadNotifyHeader,
   getSearchHeader,
   getVersionHeader,
-  type Header,
   headerFromBuffer,
   headerToBuffer,
 };

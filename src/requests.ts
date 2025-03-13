@@ -2,14 +2,14 @@ import {
   getClientNameHeader,
   getCreateChanHeader,
   getHostNameHeader,
+  getReadNotifyHeader,
   getSearchHeader,
   getVersionHeader,
-  Header,
   headerToBuffer,
 } from "./headers.ts";
 import { MAX_MESSAGE_SIZE } from "./constants.ts";
 import { concat, copy } from "@std/bytes";
-import type { Request } from "./types.ts";
+import type { DBRType, Header, Request } from "./types.ts";
 
 function genPayload(payload: string): Uint8Array {
   const encoded = new TextEncoder().encode(payload);
@@ -73,10 +73,21 @@ function requestSearch(
   return { header, payload, raw: raw(header, payload) };
 }
 
+function requestReadNotify(
+  dataType: DBRType,
+  dataCount: number,
+  sid: number,
+  ioid: number,
+): Request {
+  const header = getReadNotifyHeader(dataType, dataCount, sid, ioid);
+  return { header, payload: undefined, raw: raw(header) };
+}
+
 export {
   requestClientName,
   requestCreateChan,
   requestHostName,
+  requestReadNotify,
   requestSearch,
   requestVersion,
 };

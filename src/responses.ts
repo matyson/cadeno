@@ -45,8 +45,17 @@ function decodeSearchResponse(buf: Uint8Array): Response {
   return res; // payload is server version UINT16
 }
 
+function decodeReadNotifyResponse(buf: Uint8Array): Response {
+  const res = decode(buf);
+  if (!res.payload) {
+    throw new Error("Expected data");
+  }
+  return res;
+}
+
 export {
   decodeAccessRightsResponse,
   decodeCreateChannelResponse,
+  decodeReadNotifyResponse,
   decodeSearchResponse,
 };
