@@ -37,6 +37,7 @@ export const commands = {
   CREATE_CHAN: 18,
   CLIENT_NAME: 20,
   HOST_NAME: 21,
+  ACCESS_RIGHTS: 22,
   ECHO: 23,
   REPEATER_REGISTER: 24,
 } as const;

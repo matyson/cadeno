@@ -10,20 +10,25 @@ function response(header: Header, payload: Uint8Array): Response {
   return { header, payload };
 }
 
-function createChanResponse(buf: Uint8Array) {
+function decode(buf: Uint8Array): Response {
   const header = headerFromBuffer(buf);
-  if (header.command === errors.CREATE_CHAN) {
-    throw new Error("Channel creation failed");
-  }
   return response(header, payloadFromBuffer(buf, header.payloadSize));
 }
 
-function searchResponse(buf: Uint8Array) {
-  const header = headerFromBuffer(buf);
-  if (header.command === errors.NOT_FOUND) {
-    throw new Error("Channel not found");
+function decodeCreateChannelResponse(buf: Uint8Array): Response {
+  const res = decode(buf);
+  if (res.header.command === errors.CREATE_CHAN) {
+    throw new Error("Channel creation failed");
   }
-  return response(header, payloadFromBuffer(buf, header.payloadSize)); // payload is server version UINT16
+  return res;
 }
 
-export { createChanResponse, searchResponse };
+function decodeSearchResponse(buf: Uint8Array): Response {
+  const res = decode(buf);
+  if (res.header.command === errors.NOT_FOUND) {
+    throw new Error("Channel not found");
+  }
+  return res; // payload is server version UINT16
+}
+
+export { decodeCreateChannelResponse, decodeSearchResponse };

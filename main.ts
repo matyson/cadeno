@@ -1,17 +1,27 @@
 import { createVirtualCircuit } from "./src/circuit.ts";
 import {
   ADDR_LIST,
+  commands,
+  HEADER_SIZE,
   MINOR_PROTOCOL_VERSION,
   RESPONSE_SIZE,
   SEARCH_REPLY_FLAGS,
   SERVER_PORT,
 } from "./src/constants.ts";
+import { headerFromBuffer } from "./src/headers.ts";
 import { requestCreateChan, requestSearch } from "./src/requests.ts";
-import { createChanResponse, searchResponse } from "./src/responses.ts";
+import {
+  decodeCreateChannelResponse,
+  decodeSearchResponse,
+} from "./src/responses.ts";
+import { AccessRights } from "./src/types.ts";
 
 async function main() {
   const channelName = "random_walk:x";
-  const { conn } = await createVirtualCircuit(ADDR_LIST[0], SERVER_PORT);
+  const { conn, addChannel, getChannels } = await createVirtualCircuit(
+    ADDR_LIST[0],
+    SERVER_PORT,
+  );
 
   await conn.write(
     requestSearch(
@@ -25,7 +35,7 @@ async function main() {
   await conn.read(buf);
 
   try {
-    const res = searchResponse(buf);
+    const res = decodeSearchResponse(buf);
     console.log("Channel found");
     console.log(res);
   } catch (err) {
@@ -36,17 +46,32 @@ async function main() {
     requestCreateChan(channelName, 1, MINOR_PROTOCOL_VERSION).raw,
   );
 
-  const n = await conn.read(buf);
-  console.log(n);
+  await conn.read(buf);
+  const accessBuf = buf.slice(0, HEADER_SIZE);
+  const accessHeader = headerFromBuffer(accessBuf);
+  if (accessHeader.command !== commands.ACCESS_RIGHTS) {
+    throw new Error("Expected access rights response");
+  }
+
+  const accessRights = accessHeader.param2 as AccessRights;
 
   try {
-    const res = createChanResponse(buf);
-    console.log(buf);
-    console.log("Channel created");
+    const createChanBuf = buf.slice(HEADER_SIZE);
+    const res = decodeCreateChannelResponse(createChanBuf);
+    const { header } = res;
     console.log(res);
+    console.log("Channel created");
+    addChannel(
+      channelName,
+      header.dataType,
+      header.param1,
+      header.param2,
+      accessRights,
+    );
   } catch (err) {
     console.log(err);
   }
+  console.log(getChannels());
   conn.close();
 }
 
