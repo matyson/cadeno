@@ -11,6 +11,7 @@ import {
 import { headerFromBuffer } from "./src/headers.ts";
 import { requestCreateChan, requestSearch } from "./src/requests.ts";
 import {
+  decodeAccessRightsResponse,
   decodeCreateChannelResponse,
   decodeSearchResponse,
 } from "./src/responses.ts";
@@ -48,7 +49,7 @@ async function main() {
 
   await conn.read(buf);
   const accessBuf = buf.slice(0, HEADER_SIZE);
-  const accessHeader = headerFromBuffer(accessBuf);
+  const { header: accessHeader } = decodeAccessRightsResponse(accessBuf);
   if (accessHeader.command !== commands.ACCESS_RIGHTS) {
     throw new Error("Expected access rights response");
   }

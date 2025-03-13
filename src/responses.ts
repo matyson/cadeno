@@ -1,5 +1,5 @@
 import type { Header, Response } from "./types.ts";
-import { errors, HEADER_SIZE } from "./constants.ts";
+import { commands, errors, HEADER_SIZE } from "./constants.ts";
 import { headerFromBuffer } from "./headers.ts";
 
 function payloadFromBuffer(
@@ -21,6 +21,14 @@ function decode(buf: Uint8Array): Response {
   return response(header, payloadFromBuffer(buf, header.payloadSize));
 }
 
+function decodeAccessRightsResponse(buf: Uint8Array): Response {
+  const res = decode(buf);
+  if (res.header.command !== commands.ACCESS_RIGHTS) {
+    throw new Error("Expected access rights response");
+  }
+  return res;
+}
+
 function decodeCreateChannelResponse(buf: Uint8Array): Response {
   const res = decode(buf);
   if (res.header.command === errors.CREATE_CHAN) {
@@ -37,4 +45,8 @@ function decodeSearchResponse(buf: Uint8Array): Response {
   return res; // payload is server version UINT16
 }
 
-export { decodeCreateChannelResponse, decodeSearchResponse };
+export {
+  decodeAccessRightsResponse,
+  decodeCreateChannelResponse,
+  decodeSearchResponse,
+};
