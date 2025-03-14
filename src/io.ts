@@ -1,9 +1,9 @@
 import { errors, RESPONSE_SIZE } from "./constants.ts";
 import { requestReadNotify } from "./requests.ts";
 import { decodeReadNotifyResponse, parseData } from "./responses.ts";
-import { Channel } from "./types.ts";
+import type { Channel, Data } from "./types.ts";
 
-async function read(channel: Channel, conn: Deno.Conn) {
+async function read(channel: Channel, conn: Deno.Conn): Promise<Data[]> {
   await conn.write(
     requestReadNotify(channel.dataType, 1, channel.sid, 1).raw,
   );
