@@ -27,7 +27,7 @@ export type Channel = {
   name: string;
   cid: number;
   sid: number;
-  dataType: number;
+  dataType: DBRType;
   accessRights: AccessRights;
 };
 

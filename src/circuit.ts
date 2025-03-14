@@ -1,4 +1,4 @@
-import type { AccessRights, Channel } from "./types.ts";
+import type { Channel } from "./types.ts";
 import {
   commands,
   DEFAULT_PRIORITY,
@@ -40,7 +40,7 @@ export async function handshake(
 
   result.forEach((res) => {
     if (res.status === "rejected") {
-      console.log(res.reason);
+      throw new Error(`Failed to handshake: ${res.reason}`);
     }
   });
 
@@ -54,14 +54,8 @@ export async function createVirtualCircuit(hostname: string, port: number) {
   let conn;
   let channels: Channel[] = [];
 
-  const addChannel = (
-    name: string,
-    dataType: number,
-    cid: number,
-    sid: number,
-    accessRights: AccessRights,
-  ) => {
-    channels.push({ name, cid, sid, dataType, accessRights });
+  const addChannel = (channel: Channel) => {
+    channels.push(channel);
   };
   const getChannel = (name: string) => {
     return channels.find((channel) => channel.name === name);
@@ -78,18 +72,17 @@ export async function createVirtualCircuit(hostname: string, port: number) {
       hostname: hostname,
     });
   } catch (err) {
-    console.log(err);
-    Deno.exit(1);
+    throw new Error(`Failed to connect to ${hostname}:${port}> ${err}`);
   }
 
-  const res = await handshake(conn);
-  console.log(res);
+  try {
+    const res = await handshake(conn);
 
-  if (res.command !== commands.VERSION) {
-    console.log("Invalid response");
-    Deno.exit(1);
+    if (res.command !== commands.VERSION) {
+      throw new Error("Expected version response");
+    }
+  } catch (err) {
+    throw new Error(`Failed to handshake: ${err}`);
   }
-  console.log("Connected to server");
-
   return { conn, addChannel, getChannel, getChannels, removeChannel };
 }
