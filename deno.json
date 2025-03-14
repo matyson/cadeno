@@ -1,11 +1,14 @@
 {
   "tasks": {
     "dev": "deno run --allow-net --allow-sys --allow-env main.ts",
-    "ci": "deno lint && deno fmt --check"
+    "ci": "deno lint && deno fmt --check",
+    "install:caget": "deno install --config deno.json --global --allow-net --allow-env --allow-sys -n caget -f cli/caget.ts",
+    "install": "deno run 'install:*'"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "@std/bytes": "jsr:@std/bytes@^1.0.5"
+    "@std/bytes": "jsr:@std/bytes@^1.0.5",
+    "@std/cli": "jsr:@std/cli@^1.0.14"
   },
   "unstable": ["net"]
 }
