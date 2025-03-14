@@ -15,7 +15,7 @@ import {
   decodeCreateChannelResponse,
   decodeSearchResponse,
 } from "../src/responses.ts";
-import { AccessRights, DBRType } from "../src/types.ts";
+import type { AccessRights, DBRType } from "../src/types.ts";
 import { parseArgs } from "@std/cli/parse-args";
 
 async function main() {
