@@ -1,7 +1,8 @@
-import { ACCESS_RIGHTS, DBR_TYPES } from "./constants.ts";
+import type { ACCESS_RIGHTS, DBR_TYPES } from "./constants.ts";
 
 export type AccessRights = typeof ACCESS_RIGHTS[keyof typeof ACCESS_RIGHTS];
 export type DBRType = typeof DBR_TYPES[keyof typeof DBR_TYPES];
+export type Data = number | string | boolean;
 
 export type Header = { // 16 bytes
   command: number; // UINT16 - 2 bytes

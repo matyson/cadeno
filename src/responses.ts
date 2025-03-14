@@ -1,4 +1,4 @@
-import type { Header, Response } from "./types.ts";
+import type { Data, Header, Response } from "./types.ts";
 import { commands, DBR_TYPES, errors, HEADER_SIZE } from "./constants.ts";
 import { headerFromBuffer } from "./headers.ts";
 
@@ -52,8 +52,6 @@ function decodeReadNotifyResponse(buf: Uint8Array): Response {
   }
   return res;
 }
-
-type Data = number | string | boolean;
 
 function parseData(buf: Uint8Array, type: number, count: number): Data[] {
   const view = new DataView(buf.buffer);
