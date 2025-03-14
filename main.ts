@@ -8,21 +8,17 @@ import {
   SEARCH_REPLY_FLAGS,
   SERVER_PORT,
 } from "./src/constants.ts";
-import {
-  requestCreateChan,
-  requestReadNotify,
-  requestSearch,
-} from "./src/requests.ts";
+import { read } from "./src/io.ts";
+import { requestCreateChan, requestSearch } from "./src/requests.ts";
 import {
   decodeAccessRightsResponse,
   decodeCreateChannelResponse,
-  decodeReadNotifyResponse,
   decodeSearchResponse,
 } from "./src/responses.ts";
-import { AccessRights, DBRType } from "./src/types.ts";
+import type { AccessRights, DBRType } from "./src/types.ts";
 
 async function main() {
-  const channelName = "simple:A";
+  const channelName = "random_walk:x";
   const { conn, addChannel, getChannel, getChannels } =
     await createVirtualCircuit(
       ADDR_LIST[0],
@@ -67,13 +63,13 @@ async function main() {
     const { header } = res;
     console.log(res);
     console.log("Channel created");
-    addChannel(
-      channelName,
-      header.dataType,
-      header.param1,
-      header.param2,
+    addChannel({
+      name: channelName,
+      cid: header.param1,
+      sid: header.param2,
+      dataType: header.dataType as DBRType,
       accessRights,
-    );
+    });
   } catch (err) {
     console.log(err);
   }
@@ -83,15 +79,8 @@ async function main() {
   if (!channel) {
     throw new Error("Channel not found");
   }
-  conn.write(
-    requestReadNotify(channel.dataType as DBRType, 1, channel.sid, channel.cid)
-      .raw,
-  );
-
-  const readBuf = new Uint8Array(RESPONSE_SIZE);
-  await conn.read(readBuf);
-  const readRes = decodeReadNotifyResponse(readBuf);
-  console.log(readRes);
+  const data = await read(channel, conn);
+  console.log("Data read >", data);
   conn.close();
 }
 
