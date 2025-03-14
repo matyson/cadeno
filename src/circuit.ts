@@ -12,6 +12,21 @@ import {
   requestVersion,
 } from "./requests.ts";
 
+function getClientName() {
+  const envVars = ["USER", "USERNAME", "LOGNAME"];
+  for (const envVar of envVars) {
+    const value = Deno.env.get(envVar);
+    if (value) {
+      return value;
+    }
+  }
+  return "deno";
+}
+
+function getHostName() {
+  return Deno.hostname();
+}
+
 export async function handshake(
   conn: Deno.Conn,
   priority: number = DEFAULT_PRIORITY,
@@ -19,8 +34,8 @@ export async function handshake(
 ) {
   const result = await Promise.allSettled([
     conn.write(requestVersion(priority, version).raw),
-    conn.write(requestClientName("deno").raw),
-    conn.write(requestHostName(Deno.hostname()).raw),
+    conn.write(requestClientName(getClientName()).raw),
+    conn.write(requestHostName(getHostName()).raw),
   ]);
 
   result.forEach((res) => {
