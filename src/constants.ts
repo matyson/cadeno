@@ -31,20 +31,38 @@ export const SEARCH_REPLY_FLAGS = {
 
 export const commands = {
   VERSION: 0,
-  READ: 3, // deprecated
+  EVENT_ADD: 1,
+  EVENT_CANCEL: 2,
+  WRITE: 4,
   SEARCH: 6,
+  EVENTS_OFF: 8,
+  EVENTS_ON: 9,
+  ERROR: 11,
+  CLEAR_CHANNEL: 12,
+  NOT_FOUND: 14,
   READ_NOTIFY: 15,
   CREATE_CHAN: 18,
+  WRITE_NOTIFY: 19,
   CLIENT_NAME: 20,
   HOST_NAME: 21,
   ACCESS_RIGHTS: 22,
   ECHO: 23,
   REPEATER_REGISTER: 24,
+  CREATE_CH_FAIL: 26,
+  SERVER_DISCONN: 27,
 } as const;
 
 export const errors = {
   NOT_FOUND: 14,
   CREATE_CHAN: 26,
+} as const;
+
+export const SEVERITY_CODES = {
+  WARNING: 0,
+  SUCCESS: 1,
+  ERROR: 2,
+  INFO: 3,
+  SEVERE: 4,
 } as const;
 
 export const DBR_TYPES = {
